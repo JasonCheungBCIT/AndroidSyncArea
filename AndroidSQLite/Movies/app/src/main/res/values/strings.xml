@@ -7,4 +7,10 @@
         <item>Three</item>
         <item>Four</item>
     </string-array>
+
+    <!-- no quotations -->
+    <string-array name="testeArray">
+        <item>"One two three"</item>
+        <item>we did it Reddit</item>
+    </string-array>
 </resources>

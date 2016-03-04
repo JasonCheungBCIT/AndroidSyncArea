@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name" translatable="false">LocaleLab</string>
+    <string name="country">Canada</string>
+    <string name="greeting">Hello!</string>
+</resources>

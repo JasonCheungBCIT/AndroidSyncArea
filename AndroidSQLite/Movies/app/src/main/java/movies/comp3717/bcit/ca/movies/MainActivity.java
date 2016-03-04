@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -38,7 +39,8 @@ public class MainActivity extends ListActivity
     private SimpleCursorAdapter titlesAdapater;
 
     /**
-     * Sets up the (SQLite) database.
+     * Custom class to set up the (SQLite) database.
+     * Extends SQLiteOpenHelper
      */
     private DataDbHelper dataDBHelper;
 
@@ -66,12 +68,12 @@ public class MainActivity extends ListActivity
         new RetrieveDataTask(db).execute("https://api.mongolab.com/api/1/databases/comp3717/collections/test?apiKey=7NxSEeut--6JUnTVlcldQ-ZqUo9oM9-6");
 
         // get the data form the db ...
-        titlesAdapater = new SimpleCursorAdapter(this,
-                                android.R.layout.simple_list_item_1,
-                                getAllTitles(db),
-                                new String[] { DataEntry.COLUMN_NAME_VALUE }, // why not table?
-                                new int[] { android.R.id.text1 }, // What's this
-                                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        titlesAdapater = new SimpleCursorAdapter(this,                        // Context
+                                android.R.layout.simple_list_item_1,          // layout type to use
+                                getAllTitles(db),                             // cursor (the table)
+                                new String[] { DataEntry.COLUMN_NAME_VALUE }, // columns to display in the list
+                                new int[] { android.R.id.text1 },             // view id to inflate; The TextView in simple_list_item_1
+                                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);// flags
 
         // ... and stuff it into the list
         setListAdapter(titlesAdapater);
@@ -124,8 +126,8 @@ public class MainActivity extends ListActivity
         cursor = db.query(DataEntry.TABLE_NAME,
                           new String[]
                           {
-                              DataEntry._ID, //whats this, just know it makes it work
-                              DataEntry.COLUMN_NAME_VALUE
+                              DataEntry._ID, // auto increment's the id
+                              DataEntry.COLUMN_NAME_VALUE,
                           },
                           null,
                           null,
@@ -135,7 +137,7 @@ public class MainActivity extends ListActivity
 
         Log.d("X", Integer.toString(cursor.getCount()));
 
-        return cursor;
+        return cursor;  // returned the cursor, which only contains (found) the id and the value.
     }
 
     // ON THE MIDTERM! THIS WHOLE CLASS , don't worry about the progress
@@ -159,6 +161,7 @@ public class MainActivity extends ListActivity
          */
         private SQLiteDatabase database;
 
+        // Constructor
         RetrieveDataTask(final SQLiteDatabase db)
         {
             database = db;
@@ -246,7 +249,7 @@ public class MainActivity extends ListActivity
                 // re-run the query so we have the current data
                 titlesAdapater.getCursor().requery();   // Updating the query?
 
-                // tell the table that we have new data
+                // tell the table that we have new data, update yourself (visually)
                 titlesAdapater.notifyDataSetChanged();
             }
             catch(final JSONException ex)
